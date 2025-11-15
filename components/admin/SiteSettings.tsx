@@ -65,14 +65,14 @@ export default function SiteSettings() {
       <div>
         <h2 className="text-2xl font-bold mb-2">Site Settings</h2>
         <p className="text-muted-foreground">
-          Configure your site's general settings and SEO
+          Configure your site&apos;s general settings and SEO
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>SEO Settings</CardTitle>
-          <CardDescription>Configure your site's SEO metadata</CardDescription>
+          <CardDescription>Configure your site&apos;s SEO metadata</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
