@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  name          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Page {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String?
+  published   Boolean  @default(false)
+  sections    Section[]
+  seoTitle    String?
+  seoDescription String?
+  seoImage    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Section {
+  id          String   @id @default(cuid())
+  pageId      String
+  page        Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  type        String   // 'social-feed', 'about', 'stats', 'custom'
+  order       Int      @default(0)
+  config      Json     // Flexible JSON config for section-specific settings
+  style       Json?    // Custom styling (colors, fonts, etc.)
+  visible     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([pageId, order])
+}
+
+model SocialMediaConfig {
+  id            String   @id @default(cuid())
+  platform      String   @unique // 'twitter', 'github', 'youtube', etc.
+  enabled       Boolean  @default(false)
+  apiKey        String?  // Encrypted in production
+  apiSecret     String?  // Encrypted in production
+  accessToken   String?  // Encrypted in production
+  refreshToken  String?  // Encrypted in production
+  username      String?
+  userId        String?
+  lastSync      DateTime?
+  syncInterval  Int      @default(300) // seconds
+  config        Json?    // Platform-specific config
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model SocialMediaPost {
+  id            String   @id @default(cuid())
+  platform      String
+  platformId    String   // Original ID from platform
+  configId      String
+  config        SocialMediaConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+  content       String
+  url           String
+  imageUrl      String?
+  authorName    String?
+  authorAvatar  String?
+  publishedAt   DateTime
+  metadata      Json?    // Platform-specific data
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([platform, platformId])
+  @@index([configId, publishedAt])
+  @@index([platform, publishedAt])
+}
+
+model SiteSettings {
+  id            String   @id @default(cuid())
+  key           String   @unique
+  value         Json
+  updatedAt     DateTime @updatedAt
+}
+
+model Analytics {
+  id            String   @id @default(cuid())
+  provider      String   // 'google', 'plausible', etc.
+  enabled       Boolean  @default(false)
+  config        Json?    // Provider-specific config
+  updatedAt     DateTime @updatedAt
+}
+
