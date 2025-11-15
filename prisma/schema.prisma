@@ -61,6 +61,7 @@ model SocialMediaConfig {
   lastSync      DateTime?
   syncInterval  Int      @default(300) // seconds
   config        Json?    // Platform-specific config
+  posts         SocialMediaPost[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
